@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Green-Lean-Electrics/simulator-backend.git"
+    "url": "git+https://github.com/Green-Lean-Electrics/gle-backend.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Green-Lean-Electrics/simulator-backend/issues"
+    "url": "https://github.com/Green-Lean-Electrics/gle-backend/issues"
   },
-  "homepage": "https://github.com/Green-Lean-Electrics/simulator-backend#readme",
+  "homepage": "https://github.com/Green-Lean-Electrics/gle-backend#readme",
   "dependencies": {
     "apollo-server": "^2.9.8",
     "apollo-server-express": "^2.9.9",
