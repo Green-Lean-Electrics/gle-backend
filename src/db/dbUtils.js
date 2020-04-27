@@ -1,14 +1,25 @@
-const mongoose = require('mongoose');
-const cachegoose = require('cachegoose');
-const config = require('../config')
+const mongoose = require("mongoose");
+const cachegoose = require("cachegoose");
 
 mongoose.Promise = global.Promise;
 
 //Establish connection with remote database
 
-const url = 'mongodb://' + config.db.user + ':' + config.db.password + '@' +  config.db.host + ':' + config.db.port + '/' + config.db.dbName
+const url =
+  "mongodb://" +
+  process.env.DB_USER +
+  ":" +
+  process.env.DB_PASSWORD +
+  "@" +
+  process.env.DB_HOST +
+  ":" +
+  process.env.DB_PORT +
+  "/" +
+  process.env.DB_NAME;
 
-mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
-mongoose.connection.once('open', () => console.log('Connected to MongoDB at ' + config.db.host))
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connection.once("open", () =>
+  console.log("Connected to MongoDB at " + process.env.DB_HOST)
+);
 
-cachegoose(mongoose)
+cachegoose(mongoose);

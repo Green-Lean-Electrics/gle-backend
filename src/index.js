@@ -6,9 +6,16 @@ const typeDefs = require('./graphql/schema');
 const resolvers = require('./graphql/resolvers')
 const authentication = require('./graphql/authentication')
 
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Loading env vars from .env')
+  require('dotenv').config()
+}
+
 require('./db/dbUtils')
 
 const buffer = require('./simulation/buffers')
+
+const PORT = process.env.PORT || 4000;
 
 
 const app = express()
@@ -26,7 +33,7 @@ cron.schedule("* * * * *", function () {
   buffer.updateBuffers()
 })
 
-app.listen({ port: 4000 }, () =>
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+app.listen({ port: PORT }, () =>
+  console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
 );
 

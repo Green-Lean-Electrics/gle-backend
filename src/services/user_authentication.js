@@ -10,7 +10,6 @@ const random = require("random-number");
 
 const yahoo = require("../apis/yahoo");
 const { User, Household } = require("../db/dbModels");
-const config = require("../config");
 
 module.exports = {
   register: async function (input) {
@@ -44,7 +43,7 @@ module.exports = {
 
     const token = jwt.sign(
       { data: { date: Date.now, email: input.email } },
-      config.jwt.key
+      process.env.JWT_KEY
     );
 
     let newUser = User({
@@ -82,7 +81,7 @@ module.exports = {
 
     const token = jwt.sign(
       { data: { date: Date.now, email: email } },
-      config.jwt.key
+      process.env.JWT_KEY
     );
 
     result.tokens.push(token);
@@ -90,16 +89,16 @@ module.exports = {
       console.log("[AUTH] Error while logging in: " + err)
     );
 
-    console.log(result)
+    console.log(result);
 
     return {
-        token: token,
-        user: result
-    }
+      token: token,
+      user: result,
+    };
   },
 
   logout: async function (token) {
-    const email = jwt.verify(token, config.jwt.key)["data"]["email"];
+    const email = jwt.verify(token, process.env.JWT_KEY)["data"]["email"];
     const result = await User.findOne({ email: email });
     if (result.tokens.indexOf(token) == -1) {
       throw new AuthenticationError("Unknown token");
