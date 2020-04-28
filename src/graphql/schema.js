@@ -10,9 +10,9 @@ const typeDefs = gql`
   }  
 
   type Mutation {
-    signup(input: SignupInput!) : LoginResult!
-    login(email: String!, password: String!) : LoginResult!
-    logout() : Boolean!
+    signup(input: SignupInput!): LoginResult!
+    login(email: String!, password: String!): LoginResult!
+    logout: Boolean!
 
     setElectricityPrice(newPrice: Float!) : Boolean!
     setCoalPlantState(state: String!) : Boolean!
