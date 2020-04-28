@@ -12,7 +12,7 @@ const yahoo = require("../apis/yahoo");
 const { User, Household } = require("../db/dbModels");
 
 module.exports = {
-  register: async function (input) {
+  signup: async function (input) {
     let result = await User.find({ email: input.email });
     if (result.length != 0) {
       throw new UserInputError("Email already in use");

@@ -64,8 +64,8 @@ const resolvers = {
             weather.updateWindParameters()
             return true
         },
-        register : (_, {input}, context) => {
-            return user_auth.register(input)
+        signup : (_, {input}, context) => {
+            return user_auth.signup(input)
         },
         login : (_, {email, password}, context) => {
             return user_auth.login(email, password)
