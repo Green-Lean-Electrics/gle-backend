@@ -9,13 +9,13 @@ async function generateRoleContext(payload) {
     const email = jwt.verify(token, process.env.JWT_KEY)["data"]["email"];
 
     const result = await User.findOne({ email: email });
-
+    
     if (result.tokens.indexOf(token) == -1) {
-      return { user: null, role: "unknown" };
+      return { user: null, role: "unknown", token: "" };
     }
-    return { user: email, role: result.role };
+    return { user: email, role: result.role, token: token };
   } catch (exception) {
-    return { user: null, role: "unknown" };
+    return { user: null, role: "unknown", token: "" };
   }
 }
 

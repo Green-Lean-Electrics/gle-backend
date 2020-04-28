@@ -64,13 +64,16 @@ const resolvers = {
             weather.updateWindParameters()
             return true
         },
-        signup : (_, {input}, context) => {
+        signup : (_, {input}, __) => {
             return user_auth.signup(input)
         },
-        login : (_, {email, password}, context) => {
+        login : (_, {email, password}, __) => {
             return user_auth.login(email, password)
+        },
+        logout : (_, __, context) => {
+            return user_auth.logout(context.token)
         }        
     }
-};
+}
 
-module.exports = resolvers;
+module.exports = resolvers

@@ -98,15 +98,19 @@ module.exports = {
   },
 
   logout: async function (token) {
-    const email = jwt.verify(token, process.env.JWT_KEY)["data"]["email"];
-    const result = await User.findOne({ email: email });
-    if (result.tokens.indexOf(token) == -1) {
-      throw new AuthenticationError("Unknown token");
+    try {
+      const email = jwt.verify(token, process.env.JWT_KEY)["data"]["email"];
+      const result = await User.findOne({ email: email })
+      if (result.tokens.indexOf(token) == -1) {
+        throw new AuthenticationError("Unknown token")
+      }
+      result.tokens = result.tokens.filter((t) => token !== t)
+      result.save((err, _) =>
+        console.log("[AUTH] Error while logging out: " + err)
+      );
+      return true
+    } catch {
+      return false
     }
-    result.tokens = result.tokens.filter((t) => token !== t);
-    result.save((err, _) =>
-      console.log("[AUTH] Error while logging out: " + err)
-    );
-    return true;
   },
 };
