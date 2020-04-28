@@ -1,8 +1,4 @@
-const {
-  UserInputError,
-  AuthenticationError,
-  ApolloError,
-} = require("apollo-server");
+const { UserInputError, AuthenticationError } = require("apollo-server");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -89,8 +85,6 @@ module.exports = {
       console.log("[AUTH] Error while logging in: " + err)
     );
 
-    console.log(result);
-
     return {
       token: token,
       user: result,
@@ -100,17 +94,27 @@ module.exports = {
   logout: async function (token) {
     try {
       const email = jwt.verify(token, process.env.JWT_KEY)["data"]["email"];
-      const result = await User.findOne({ email: email })
+      const result = await User.findOne({ email: email });
       if (result.tokens.indexOf(token) == -1) {
-        throw new AuthenticationError("Unknown token")
+        throw new AuthenticationError("Unknown token");
       }
-      result.tokens = result.tokens.filter((t) => token !== t)
+      result.tokens = result.tokens.filter((t) => token !== t);
       result.save((err, _) =>
         console.log("[AUTH] Error while logging out: " + err)
       );
-      return true
+      return true;
     } catch {
-      return false
+      return false;
+    }
+  },
+
+  isHouseholdOwner: async function (householdId, token) {
+    try {
+      const email = jwt.verify(token, process.env.JWT_KEY)["data"]["email"];
+      const result = await User.findOne({ email: email });
+      return result.householdId == householdId;
+    } catch {
+      return false;
     }
   },
 };

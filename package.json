@@ -35,7 +35,8 @@
     "oauth": "^0.9.15",
     "polynomial": "^1.4.3",
     "random-number": "0.0.9",
-    "stochastic": "0.0.14"
+    "stochastic": "0.0.14",
+    "websocket": "^1.0.31"
   },
   "engines": {
     "node": "13.1.0"

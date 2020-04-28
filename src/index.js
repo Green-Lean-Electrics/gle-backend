@@ -1,39 +1,46 @@
-const express = require('express');
+const express = require("express");
+const WebSocketServer = require("websocket").server;
 const cron = require("node-cron");
+const { ApolloServer } = require("apollo-server-express");
 
-const { ApolloServer, gql } = require('apollo-server-express');
-const typeDefs = require('./graphql/schema');
-const resolvers = require('./graphql/resolvers')
-const authentication = require('./graphql/authentication')
+const handleWebsocketRequests = require("./services/websocketService");
+const typeDefs = require("./graphql/schema");
+const resolvers = require("./graphql/resolvers");
+const authentication = require("./graphql/authentication");
 
-if (process.env.NODE_ENV !== 'production') {
-  console.log('Loading env vars from .env')
-  require('dotenv').config()
+if (process.env.NODE_ENV !== "production") {
+  console.log("Loading env vars from .env");
+  require("dotenv").config();
 }
 
-require('./db/dbUtils')
+require("./db/dbUtils");
 
-const buffer = require('./simulation/buffers')
+const buffer = require("./simulation/buffers");
+
+// cron.schedule("* * * * *", function () {
+//   buffer.updateBuffers();
+// });
 
 const PORT = process.env.PORT || 4000;
 
+const app = express();
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: authentication.generateRoleContext,
+});
 
-const app = express()
-const server = new ApolloServer(
-  {
-    typeDefs,
-    resolvers,
-    context: authentication.generateRoleContext
-  }
+apolloServer.applyMiddleware({ app });
+
+const server = app.listen({ port: PORT }, () =>
+  console.log(
+    `🚀 Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}`
+  )
 );
 
-server.applyMiddleware({ app });
+const websocketServer = new WebSocketServer({
+  httpServer: server,
+  autoAcceptConnections: false,
+});
 
-cron.schedule("* * * * *", function () {
-  buffer.updateBuffers()
-})
-
-app.listen({ port: PORT }, () =>
-  console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
-);
-
+handleWebsocketRequests(websocketServer);
