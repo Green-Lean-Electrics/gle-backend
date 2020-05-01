@@ -55,6 +55,7 @@ app.get("/pictures", (req, res) => {
   Attachment.findById(id, (error, attachment) => {
     if(error || !attachment){
       res.status(404).send("Picture not found");
+      return;
     }
     const readstream = attachment.read();
     readstream.pipe(res);
