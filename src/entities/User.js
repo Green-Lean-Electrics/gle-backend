@@ -56,7 +56,7 @@ module.exports = {
       password: await bcrypt.hash(input.password, 10),
       profilePictureURL: "/pictures?id=5eac22235a3ce4001784cede",
       role: "PROSUMER_ROLE",
-      token: [token],
+      tokens: [token],
       householdId: newHousehold._id,
     });
 
