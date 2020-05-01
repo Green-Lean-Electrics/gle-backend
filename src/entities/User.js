@@ -133,7 +133,7 @@ module.exports = {
       throw new AuthenticationError("Unknown user or password");
     }
 
-    let newPicture = user.profilePicture;
+    let newPicture = user.profilePictureURL;
     if (input.picture) {
       const { createReadStream, mimetype } = await input.picture;
       const readStream = createReadStream();
