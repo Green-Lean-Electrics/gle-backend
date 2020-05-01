@@ -2,6 +2,7 @@ const express = require("express");
 const WebSocketServer = require("websocket").server;
 const cron = require("node-cron");
 const { ApolloServer } = require("apollo-server-express");
+const { createModel } = require("mongoose-gridfs");
 
 const handleWebsocketRequests = require("./services/websocketService");
 const typeDefs = require("./graphql/schema");
@@ -13,13 +14,15 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-require("./db/dbUtils");
+const { initConnection, gfs } = require("./db/dbUtils");
 
 const buffer = require("./simulation/buffers");
 
 // cron.schedule("* * * * *", function () {
 //   buffer.updateBuffers();
 // });
+
+initConnection()
 
 const PORT = process.env.PORT || 4000;
 
@@ -44,3 +47,16 @@ const websocketServer = new WebSocketServer({
 });
 
 handleWebsocketRequests(websocketServer);
+
+app.get("/pictures", (req, res) => {
+
+  const id = req.query.id;
+  const Attachment = createModel();
+  Attachment.findById(id, (error, attachment) => {
+    if(error || !attachment){
+      res.status(404).send("Picture not found");
+    }
+    const readstream = attachment.read();
+    readstream.pipe(res);
+  });
+});

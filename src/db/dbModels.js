@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -10,10 +10,10 @@ const userSchema = new Schema({
   name: String,
   email: String,
   password: String,
-  role: String,
+  role: String, 
   profilePictureURL: String,
   tokens: [String],
-  householdId: { type: Schema.Types.ObjectId, ref: 'household' }
+  householdId: { type: Schema.Types.ObjectId, ref: "household" },
 });
 
 const householdSchema = new Schema({
@@ -24,27 +24,27 @@ const householdSchema = new Schema({
   },
   coords: {
     x: Number,
-    y: Number
+    y: Number,
   },
   windSimulation: {
     mu: Number,
     sigma: Number,
-    failure: Boolean
+    failure: Boolean,
   },
   created: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   picture: String,
   weatherData: {
     lastRetrieved: Date,
     temperature: Number,
-    timezone: String
+    timezone: String,
   },
   buffer: {
     load: Number,
-    ratio: Number
-  }
+    ratio: Number,
+  },
 });
 
 const coalPlantSchema = new Schema({
@@ -55,18 +55,18 @@ const coalPlantSchema = new Schema({
   },
   buffer: {
     load: Number,
-    ratio: Number
+    ratio: Number,
   },
-  state: String, 
-  electricityPrice: Number
+  state: String,
+  electricityPrice: Number,
 });
 
-const Household = mongoose.model('household', householdSchema);
-const User = mongoose.model('user', userSchema);
-const CoalPlant = mongoose.model('coalPlant', coalPlantSchema);
+const Household = mongoose.model("household", householdSchema);
+const User = mongoose.model("user", userSchema);
+const CoalPlant = mongoose.model("coalPlant", coalPlantSchema);
 
 module.exports = {
   Household,
   User,
-  CoalPlant
-}
+  CoalPlant,
+};

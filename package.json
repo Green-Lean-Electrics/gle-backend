@@ -4,9 +4,10 @@
   "description": "Wind speed and electricity price and demand simulator",
   "main": "index.js",
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "test": "echo \"Error: no test specified\" && exit 0",
+    "local": "nodemon src/index.js",
     "start": "node src/index.js",
-    "start:local": "nodemon src/index.js",
     "start:ci": "node src/index.js"
   },
   "repository": {
@@ -21,17 +22,19 @@
   },
   "homepage": "https://github.com/Green-Lean-Electrics/gle-backend#readme",
   "dependencies": {
-    "apollo-server": "^2.9.8",
-    "apollo-server-express": "^2.9.9",
+    "apollo-server-express": "^2.12.0",
     "bcrypt": "^4.0.1",
     "cachegoose": "^8.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "graphql": "^14.5.8",
+    "get-stream": "^5.1.0",
+    "graphql": "^15.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.7.11",
+    "mongoose": "^5.9.11",
+    "mongoose-gridfs": "^1.2.38",
     "node-cron": "^2.0.3",
     "node-kmeans": "^1.1.9",
+    "npm-force-resolutions": "0.0.3",
     "oauth": "^0.9.15",
     "polynomial": "^1.4.3",
     "random-number": "0.0.9",
@@ -40,5 +43,8 @@
   },
   "engines": {
     "node": "13.1.0"
+  },
+  "resolutions": {
+    "graphql-upload": "10.0.0"
   }
 }

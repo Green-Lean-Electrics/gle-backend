@@ -1,5 +1,5 @@
 const stoch = require('stochastic')
-const { UserInputError } = require('apollo-server');
+const { UserInputError } = require('apollo-server-express');
 
 const { CoalPlant } = require('../db/dbModels')
 

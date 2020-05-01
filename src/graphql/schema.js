@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server');
+const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
   type Query {
@@ -13,12 +13,20 @@ const typeDefs = gql`
     signup(input: SignupInput!): LoginResult!
     login(email: String!, password: String!): LoginResult!
     logout: Boolean!
+    updateUser(input: UpdateUserInput!) : User!
 
     setElectricityPrice(newPrice: Float!) : Boolean!
     setCoalPlantState(state: String!) : Boolean!
     setCoalPlantRatio(ratio: Float!) : Boolean!
     updateWindParameters : Boolean!
     insertHouseholds(amount: Int!) : Boolean!
+  }
+
+  input UpdateUserInput{
+    email: String!
+    password: String!
+    name: String!
+    picture: Upload
   }
 
   input SignupInput {
