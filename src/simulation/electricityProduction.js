@@ -37,7 +37,7 @@ module.exports = {
   },
 
   setHouseholdRatio: async function (newRatio, token) {
-    if (newRatio < 0.0 || newRatio > 100.0) {
+    if (newRatio < 0.0 || newRatio > 1.0) {
       throw new UserInputError("Selected ratio is invalid");
     }
 
@@ -50,7 +50,7 @@ module.exports = {
 
     await Household.findOneAndUpdate(
       { _id: user.householdId },
-      { "buffer.ratio": newRatio / 100 },
+      { "buffer.ratio": newRatio },
       { useFindAndModify: false }
     );
     cachegoose.clearCache(`${user.householdId}_ratio`);
