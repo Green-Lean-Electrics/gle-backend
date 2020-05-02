@@ -15,6 +15,8 @@ const typeDefs = gql`
     logout: Boolean!
     updateUser(input: UpdateUserInput!) : User!
 
+    setHouseholdRatio(newRatio: Float!) : Boolean!
+
     setElectricityPrice(newPrice: Float!) : Boolean!
     setCoalPlantState(state: String!) : Boolean!
     setCoalPlantRatio(ratio: Float!) : Boolean!

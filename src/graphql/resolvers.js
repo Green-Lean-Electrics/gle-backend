@@ -58,6 +58,10 @@ const resolvers = {
       auth.checkPermission(context, "manager");
       return coalPlant.setRatio(ratio);
     },
+
+    setHouseholdRatio: (_, { newRatio }, context) => {
+      return production.setHouseholdRatio(newRatio, context.token);
+    },
     updateWindParameters: () => {
       weather.updateWindParameters();
       return true;

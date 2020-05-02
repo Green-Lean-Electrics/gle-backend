@@ -63,11 +63,11 @@ module.exports = {
     },
 
     getBufferLoad: async function (householdID) {
-        const household = await Household.findById(householdID).cache(30)
+        const household = await Household.findById(householdID).cache(15)
         return household.buffer.load
     },
     getRatio: async function (householdID) {
-        const household = await Household.findById(householdID).cache(30)
+        const household = await Household.findById(householdID).cache(30, `${householdID}_ratio`)
         return household.buffer.ratio
     }
 }

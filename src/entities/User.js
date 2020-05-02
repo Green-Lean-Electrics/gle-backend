@@ -130,7 +130,7 @@ module.exports = {
     const user = await User.findOne({ _id: userId });
 
     if (!user) {
-      throw new AuthenticationError("Unknown user or password");
+      throw new AuthenticationError("Unknown user");
     }
 
     let newPicture = user.profilePictureURL;
