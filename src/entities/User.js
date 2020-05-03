@@ -115,16 +115,6 @@ module.exports = {
     }
   },
 
-  isHouseholdOwner: async function (householdId, token) {
-    try {
-      const userId = jwt.verify(token, process.env.JWT_KEY)["data"]["id"];
-      const result = await User.findOne({ _id: userId });
-      return result.householdId == householdId;
-    } catch {
-      return false;
-    }
-  },
-
   updateUser: async function (input, token) {
     const userId = jwt.verify(token, process.env.JWT_KEY)["data"]["id"];
     const user = await User.findOne({ _id: userId });

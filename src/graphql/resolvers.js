@@ -1,5 +1,6 @@
 const auth = require("../graphql/authentication");
 const User = require("../entities/User");
+const Household = require("../entities/Household");
 const weather = require("../simulation/weather");
 const consumption = require("../simulation/electricityConsumption");
 const price = require("../simulation/electricityPrice");
@@ -9,7 +10,8 @@ const buffer = require("../simulation/buffers");
 
 const resolvers = {
   Query: {
-    house: (_, { id }) => {
+    house: (_, { id }, context) => {
+      auth.checkOwnership(context, id);
       return {
         windSpeed: weather.getWindSpeed(id),
         electricityConsumption: consumption.getElectricityConsumption(id),
@@ -18,6 +20,7 @@ const resolvers = {
         temperature: weather.getTemperature(id),
         bufferLoad: buffer.getBufferLoad(id),
         ratio: buffer.getRatio(id),
+        householdPictureURL: Household.getHouseholdPicture(id),
       };
     },
     coalPlant: (_, __, context) => {
@@ -42,10 +45,6 @@ const resolvers = {
     },
   },
   Mutation: {
-    // Cambiar ratios
-    //  - Casas
-    //  - Planta carbón
-    // Bloquear venta
     setElectricityPrice: (_, { newPrice }, context) => {
       auth.checkPermission(context, "manager");
       return coalPlant.setElectricityPrice(newPrice);
@@ -77,6 +76,9 @@ const resolvers = {
     },
     updateUser: (_, { input }, context) => {
       return User.updateUser(input, context.token);
+    },
+    uploadHouseholdPicture: (_, { picture }, context) => {
+      return Household.uploadHoseholdPicture(picture, context.token);
     },
   },
 };

@@ -16,6 +16,7 @@ const typeDefs = gql`
     updateUser(input: UpdateUserInput!) : User!
 
     setHouseholdRatio(newRatio: Float!) : Boolean!
+    uploadHouseholdPicture(picture: Upload!):  String!
 
     setElectricityPrice(newPrice: Float!) : Boolean!
     setCoalPlantState(state: String!) : Boolean!
@@ -60,6 +61,7 @@ const typeDefs = gql`
     temperature: Float!
     bufferLoad: Float!
     ratio: Float!
+    householdPictureURL: String
   }
 
   type CoalPlant {

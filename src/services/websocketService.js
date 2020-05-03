@@ -2,7 +2,7 @@ const weather = require("../simulation/weather");
 const consumption = require("../simulation/electricityConsumption");
 const production = require("../simulation/electricityProduction");
 const buffer = require("../simulation/buffers");
-const User = require("../entities/User");
+const auth = require("../graphql/authentication");
 
 async function sendInformation(connection, householdId) {
   const info = {
@@ -30,7 +30,7 @@ function handleWebsocketRequests(websocketServer) {
       if (message.type === "utf8") {
         try {
           const { householdId, token } = JSON.parse(message.utf8Data);
-          if (await User.isHouseholdOwner(householdId, token)) {
+          if (await auth.isHouseholdOwner(householdId, token)) {
             task = setInterval(function () {
               sendInformation(connection, householdId);
             }, 100);

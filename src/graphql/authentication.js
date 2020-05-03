@@ -9,11 +9,16 @@ async function generateRoleContext(payload) {
     const userId = jwt.verify(token, process.env.JWT_KEY)["data"]["id"];
     const result = await User.findOne({ _id: userId });
     if (result.tokens.indexOf(token) == -1) {
-      return { user: null, role: "unknown", token: "" };
+      return { user: null, role: "unknown", token: "", householdId: "" };
     }
-    return { user: result, role: result.role, token: token };
+    return {
+      user: result,
+      role: result.role,
+      token: token,
+      householdId: result.householdId,
+    };
   } catch (exception) {
-    console.log(exception)
+    console.log(exception);
     return { user: null, role: "unknown", token: "" };
   }
 }
@@ -24,7 +29,25 @@ function checkPermission(context, role) {
   }
 }
 
+async function isHouseholdOwner(householdId, token) {
+  try {
+    const userId = jwt.verify(token, process.env.JWT_KEY)["data"]["id"];
+    const result = await User.findOne({ _id: userId });
+    return result.householdId == householdId;
+  } catch {
+    return false;
+  }
+}
+
+function checkOwnership(context, householdId) {
+  if (householdId != context.householdId) {
+    throw new AuthenticationError("Not allowd to perform that action");
+  }
+}
+
 module.exports = {
   generateRoleContext,
   checkPermission,
+  isHouseholdOwner,
+  checkOwnership,
 };

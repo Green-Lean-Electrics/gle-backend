@@ -35,7 +35,7 @@ const householdSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  picture: String,
+  householdPictureURL: String,
   weatherData: {
     lastRetrieved: Date,
     temperature: Number,
