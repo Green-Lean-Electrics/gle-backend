@@ -20,7 +20,9 @@ const resolvers = {
         temperature: weather.getTemperature(id),
         bufferLoad: buffer.getBufferLoad(id),
         ratio: buffer.getRatio(id),
-        householdPictureURL: Household.getHouseholdPicture(id),
+        frontPictureURL: Household.getPicture(id, "FRONT_YARD"),
+        backPictureURL: Household.getPicture(id, "BACK_YARD"),
+        coords: Household.getCoords(id),
       };
     },
     coalPlant: (_, __, context) => {
@@ -77,8 +79,8 @@ const resolvers = {
     updateUser: (_, { input }, context) => {
       return User.updateUser(input, context.token);
     },
-    uploadHouseholdPicture: (_, { picture }, context) => {
-      return Household.uploadHoseholdPicture(picture, context.token);
+    uploadHouseholdPicture: (_, { picture, pictureKind }, context) => {
+      return Household.uploadHoseholdPicture(picture, pictureKind, context.token);
     },
   },
 };

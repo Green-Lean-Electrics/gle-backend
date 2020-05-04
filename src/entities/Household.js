@@ -1,10 +1,13 @@
 const jwt = require("jsonwebtoken");
-const { AuthenticationError } = require("apollo-server-express");
+const {
+  AuthenticationError,
+  UserInputError,
+} = require("apollo-server-express");
 const { createModel } = require("mongoose-gridfs");
 const { User, Household } = require("../db/dbModels");
 
 module.exports = {
-  uploadHoseholdPicture: async function (picture, token) {
+  uploadHoseholdPicture: async function (picture, kind, token) {
     const userId = jwt.verify(token, process.env.JWT_KEY)["data"]["id"];
     const user = await User.findOne({ _id: userId });
 
@@ -31,21 +34,53 @@ module.exports = {
 
     const pictureURL = "/pictures?id=" + file._id;
 
-    await Household.findOneAndUpdate(
-      { _id: user.householdId },
-      {
-        householdPictureURL: pictureURL,
-      },
-      { useFindAndModify: false }
-    );
+    if (kind === "FRONT_YARD") {
+      await Household.findOneAndUpdate(
+        { _id: user.householdId },
+        {
+          frontPictureURL: pictureURL,
+        },
+        { useFindAndModify: false }
+      );
+      return pictureURL;
+    }
 
-    return pictureURL;
+    if (kind === "BACK_YARD") {
+      await Household.findOneAndUpdate(
+        { _id: user.householdId },
+        {
+          backPictureURL: pictureURL,
+        },
+        { useFindAndModify: false }
+      );
+      return pictureURL;
+    }
+
+    throw new UserInputError("Unknown picture type: " + kind);
   },
 
-  getHouseholdPicture: async function (householdId) {
-    let { householdPictureURL } = await Household.findOne({
+  getPicture: async function (householdId, pictureKind) {
+    if (pictureKind === "FRONT_YARD") {
+      const { frontPictureURL } = await Household.findOne({
+        _id: householdId,
+      });
+      return frontPictureURL;
+    }
+
+    if (pictureKind === "BACK_YARD") {
+      const { backPictureURL } = await Household.findOne({
+        _id: householdId,
+      });
+      return backPictureURL;
+    }
+
+    throw new UserInputError("Unknown picture type");
+  },
+
+  getCoords: async function (householdId) {
+    const { coords } = await Household.findOne({
       _id: householdId,
     });
-    return householdPictureURL;
+    return coords;
   },
 };
