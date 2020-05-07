@@ -7,6 +7,7 @@ const typeDefs = gql`
     totalConsumption: Float!
     house(id: String!): House
     coalPlant: CoalPlant!
+    users: [User]
   }  
 
   type Mutation {
@@ -23,6 +24,8 @@ const typeDefs = gql`
     setCoalPlantRatio(ratio: Float!) : Boolean!
     updateWindParameters : Boolean!
     insertHouseholds(amount: Int!) : Boolean!
+    deleteUser(userEmail: String!) : Boolean!
+    blockSelling(id: String!, seconds: Int!): Boolean!
   }
 
   input UpdateUserInput{
@@ -46,6 +49,7 @@ const typeDefs = gql`
     profilePictureURL: String!
     householdId: String!
     role: String!
+    lastSeen: String!
   }
 
   type LoginResult {
@@ -64,6 +68,7 @@ const typeDefs = gql`
     frontPictureURL: String,
     backPictureURL: String
     coords: Coords!
+    isSellingBlocked: Boolean!
   }
 
   type Coords {

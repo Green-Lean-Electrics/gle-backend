@@ -18,6 +18,7 @@ async function sendInformation(connection, householdId) {
     failure: await production.checkFailure(householdId),
     bufferLoad: await buffer.getBufferLoad(householdId),
     ratio: await buffer.getRatio(householdId),
+    isSellingBlocked: await buffer.isSellingBlocked(householdId)
   };
   connection.sendUTF(JSON.stringify(info));
 }
@@ -35,7 +36,7 @@ function handleWebsocketRequests(websocketServer) {
               sendInformation(connection, householdId);
             }, 100);
           } else {
-            console.log("Invalid request");
+            console.log("Invalid WS request");
           }
         } catch {
           console.log("Error processing WS request");

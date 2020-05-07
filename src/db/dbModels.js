@@ -10,9 +10,13 @@ const userSchema = new Schema({
   name: String,
   email: String,
   password: String,
-  role: String, 
+  role: String,
   profilePictureURL: String,
   tokens: [String],
+  lastSeen: {
+    type: Date,
+    default: Date.now,
+  },
   householdId: { type: Schema.Types.ObjectId, ref: "household" },
 });
 
@@ -41,6 +45,10 @@ const householdSchema = new Schema({
     lastRetrieved: Date,
     temperature: Number,
     timezone: String,
+  },
+  blockingReleaseDate: {
+    type: Date,
+    default: Date.now,
   },
   buffer: {
     load: Number,

@@ -23,10 +23,11 @@ const resolvers = {
         frontPictureURL: Household.getPicture(id, "FRONT_YARD"),
         backPictureURL: Household.getPicture(id, "BACK_YARD"),
         coords: Household.getCoords(id),
+        isSellingBlocked: buffer.isSellingBlocked(id),
       };
     },
     coalPlant: (_, __, context) => {
-      auth.checkPermission(context, "manager");
+      auth.checkPermission(context, "MANAGER_ROLE");
       return {
         electricityProduction: coalPlant.getElectricityProduction(),
         state: coalPlant.getState(),
@@ -38,25 +39,29 @@ const resolvers = {
       return coalPlant.getElectricityPrice();
     },
     estimatedElectricityPrice: (_, __, context) => {
-      auth.checkPermission(context, "manager");
+      auth.checkPermission(context, "MANAGER_ROLE");
       return price.getElectricityPrice();
     },
     totalConsumption: (_, __, context) => {
-      auth.checkPermission(context, "manager");
+      auth.checkPermission(context, "MANAGER_ROLE");
       return consumption.getTotalConsumption();
+    },
+    users: (_, __, context) => {
+      auth.checkPermission(context, "MANAGER_ROLE");
+      return User.getAllUsers();
     },
   },
   Mutation: {
     setElectricityPrice: (_, { newPrice }, context) => {
-      auth.checkPermission(context, "manager");
+      auth.checkPermission(context, "MANAGER_ROLE");
       return coalPlant.setElectricityPrice(newPrice);
     },
     setCoalPlantState: (_, { state }, context) => {
-      auth.checkPermission(context, "manager");
+      auth.checkPermission(context, "MANAGER_ROLE");
       return coalPlant.setState(state);
     },
     setCoalPlantRatio: (_, { ratio }, context) => {
-      auth.checkPermission(context, "manager");
+      auth.checkPermission(context, "MANAGER_ROLE");
       return coalPlant.setRatio(ratio);
     },
 
@@ -80,7 +85,19 @@ const resolvers = {
       return User.updateUser(input, context.token);
     },
     uploadHouseholdPicture: (_, { picture, pictureKind }, context) => {
-      return Household.uploadHoseholdPicture(picture, pictureKind, context.token);
+      return Household.uploadHoseholdPicture(
+        picture,
+        pictureKind,
+        context.token
+      );
+    },
+    deleteUser: (_, { userEmail }, context) => {
+      auth.checkPermission(context, "MANAGER_ROLE");
+      return User.deleteUser(userEmail);
+    },
+    blockSelling: (_, { id, seconds }, context) => {
+      auth.checkPermission(context, "MANAGER_ROLE");
+      return buffer.blockSelling(id, seconds);
     },
   },
 };

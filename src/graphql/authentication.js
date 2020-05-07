@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const { AuthenticationError } = require("apollo-server-express");
 
 const { User } = require("../db/dbModels");
+const { updateLastSeen } = require("../entities/User");
 
 async function generateRoleContext(payload) {
   try {
@@ -11,6 +12,9 @@ async function generateRoleContext(payload) {
     if (result.tokens.indexOf(token) == -1) {
       return { user: null, role: "unknown", token: "", householdId: "" };
     }
+
+    await updateLastSeen(userId);
+
     return {
       user: result,
       role: result.role,

@@ -8,7 +8,7 @@ const {
 
 const { Household, User } = require("../db/dbModels");
 
-const NOMINAL_POWER = 2500;
+const NOMINAL_POWER = 100;
 
 module.exports = {
   checkFailure: async function (householdID) {
@@ -27,7 +27,7 @@ module.exports = {
       if (windSpeed < 3.0) {
         return 0.0;
       } else if (windSpeed >= 3.0 && windSpeed <= 13.0) {
-        return Math.pow(windSpeed, 3);
+        return Math.pow(windSpeed, 3)/100;
       } else if (windSpeed >= 13.0 && windSpeed <= 25.0) {
         return NOMINAL_POWER;
       } else {

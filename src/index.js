@@ -14,13 +14,11 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-const { initConnection, gfs } = require("./db/dbUtils");
+const { initConnection } = require("./db/dbUtils");
 
 const buffer = require("./simulation/buffers");
 
-// cron.schedule("* * * * *", function () {
-//   buffer.updateBuffers();
-// });
+
 
 initConnection()
 
@@ -60,4 +58,8 @@ app.get("/pictures", (req, res) => {
     const readstream = attachment.read();
     readstream.pipe(res);
   });
+});
+
+cron.schedule("* * * * *", function () {
+  buffer.updateBuffers();
 });

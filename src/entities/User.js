@@ -161,4 +161,30 @@ module.exports = {
     return updatedUser;
   },
 
+  updateLastSeen: async function (userId) {
+    await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        lastSeen: new Date().toISOString(),
+      },
+      { useFindAndModify: false, new: true }
+    );
+  },
+
+  getAllUsers: async function () {
+    const users = await User.find({ role: "PROSUMER_ROLE" });
+    return users;
+  },
+
+  deleteUser: async function (userEmail) {
+    const userToDelete = await User.findOne({email: userEmail});
+    if(!userToDelete) {
+      throw new UserInputError("Unknown user to delete");
+    }
+
+    await Household.findOneAndRemove({_id: userToDelete.householdId});
+    await User.findOneAndRemove({_id: userToDelete._id});
+
+    return true;
+  }
 };
