@@ -9,7 +9,6 @@ const MAX_COAL_BUFFER_LOAD = 200.0;
 
 module.exports = {
   updateBuffers: async function () {
-    console.log('actualizando buffers')
     // Households buffers
     const households = await Household.find({});
     let netPower = 0;
@@ -53,15 +52,15 @@ module.exports = {
         }
       } else {
         //Buys from the market
-        if (bufferLoad - deltaBuffer < 0) {
+        if (bufferLoad + deltaBuffer < 0) {
           // Buffer will be empty and missing power has to be bought
           newBufferLoad = 0;
-          netPower -= bufferLoad - deltaBuffer;
+          netPower -= (bufferLoad + deltaBuffer);
         } else {
           // Standard case
-          newBufferLoad = bufferLoad - deltaBuffer;
+          newBufferLoad = bufferLoad + deltaBuffer;
         }
-        netPower -= deltaMarket;
+        netPower += deltaMarket;
       }
       await Household.updateOne(
         { _id: households[i]._id },
