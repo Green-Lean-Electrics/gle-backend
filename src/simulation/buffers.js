@@ -37,7 +37,7 @@ module.exports = {
           if (bufferLoad + delta > MAX_HOUSE_BUFFER_LOAD) {
             newBufferLoad = MAX_HOUSE_BUFFER_LOAD;
           } else {
-            newBufferLoad + bufferLoad + delta;
+            newBufferLoad = bufferLoad + delta;
           }
         } else {
           // Sells to the market
