@@ -51,7 +51,7 @@ module.exports = {
           netPower += deltaMarket;
         }
       } else {
-        //Buys from the market
+        //Buys from the market; deltaBuffer and deltaMarket are negative
         if (bufferLoad + deltaBuffer < 0) {
           // Buffer will be empty and missing power has to be bought
           newBufferLoad = 0;
@@ -66,6 +66,7 @@ module.exports = {
         { _id: households[i]._id },
         { "buffer.load": newBufferLoad }
       );
+      cachegoose.clearCache(`${householdID}_buffer`);
     }
 
     // // Coalplant buffers
@@ -76,7 +77,7 @@ module.exports = {
   },
 
   getBufferLoad: async function (householdID) {
-    const household = await Household.findById(householdID).cache(15);
+    const household = await Household.findById(householdID).cache(15, `${householdID}_buffer`);
     return household.buffer.load;
   },
   getRatio: async function (householdID) {
@@ -88,7 +89,7 @@ module.exports = {
   },
   isSellingBlocked: async function (householdID) {
     const household = await Household.findById(householdID).cache(
-      2,
+      15,
       `${householdID}_block`
     );
 
