@@ -37,10 +37,20 @@ async function isHouseholdOwner(householdId, token) {
   try {
     const userId = jwt.verify(token, process.env.JWT_KEY)["data"]["id"];
     const result = await User.findOne({ _id: userId });
-    return result.householdId == householdId;
+    return result.householdId === householdId;
   } catch {
     return false;
   }
+}
+
+async function isManager(token) {
+  try {
+    const userId = jwt.verify(token, process.env.JWT_KEY)["data"]["id"];
+    const result = await User.findOne({ _id: userId });
+    return result.role === "MANAGER_ROLE";
+  } catch {
+    return false;
+  }  
 }
 
 function checkOwnership(context, householdId) {
@@ -54,4 +64,5 @@ module.exports = {
   checkPermission,
   isHouseholdOwner,
   checkOwnership,
+  isManager
 };

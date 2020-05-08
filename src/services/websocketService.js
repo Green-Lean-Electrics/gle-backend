@@ -18,7 +18,7 @@ async function sendInformation(connection, householdId) {
     failure: await production.checkFailure(householdId),
     bufferLoad: await buffer.getBufferLoad(householdId),
     ratio: await buffer.getRatio(householdId),
-    isSellingBlocked: await buffer.isSellingBlocked(householdId)
+    isSellingBlocked: await buffer.isSellingBlocked(householdId),
   };
   connection.sendUTF(JSON.stringify(info));
 }
@@ -31,7 +31,10 @@ function handleWebsocketRequests(websocketServer) {
       if (message.type === "utf8") {
         try {
           const { householdId, token } = JSON.parse(message.utf8Data);
-          if (await auth.isHouseholdOwner(householdId, token)) {
+          if (
+            (await auth.isHouseholdOwner(householdId, token)) ||
+            (await auth.isManager(token))
+          ) {
             task = setInterval(function () {
               sendInformation(connection, householdId);
             }, 100);
