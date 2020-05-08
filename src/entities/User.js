@@ -84,6 +84,7 @@ module.exports = {
     );
 
     result.tokens.push(token);
+    result.lastSeen = new Date().toISOString();
     result.save((err, _) => {
       if (err) {
         console.log("[AUTH] Error while logging in: " + err);
@@ -172,19 +173,24 @@ module.exports = {
   },
 
   getAllUsers: async function () {
-    const users = await User.find({ role: "PROSUMER_ROLE" });
+    let users = await User.find({ role: "PROSUMER_ROLE" });
+    users = users.map((user) => {
+      user.lastSeen = 'fff:' + user.lastSeen.toISOString().toString();
+      return user
+    });
+    console.log(users)
     return users;
   },
 
   deleteUser: async function (userEmail) {
-    const userToDelete = await User.findOne({email: userEmail});
-    if(!userToDelete) {
+    const userToDelete = await User.findOne({ email: userEmail });
+    if (!userToDelete) {
       throw new UserInputError("Unknown user to delete");
     }
 
-    await Household.findOneAndRemove({_id: userToDelete.householdId});
-    await User.findOneAndRemove({_id: userToDelete._id});
+    await Household.findOneAndRemove({ _id: userToDelete.householdId });
+    await User.findOneAndRemove({ _id: userToDelete._id });
 
     return true;
-  }
+  },
 };
