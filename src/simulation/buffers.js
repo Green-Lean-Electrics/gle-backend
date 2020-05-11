@@ -66,7 +66,7 @@ module.exports = {
         { _id: households[i]._id },
         { "buffer.load": newBufferLoad }
       );
-      cachegoose.clearCache(`${householdID}_buffer`);
+      cachegoose.clearCache(`${households[i]._id}_buffer`);
     }
 
     // // Coalplant buffers

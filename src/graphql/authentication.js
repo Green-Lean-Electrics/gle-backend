@@ -36,9 +36,14 @@ function checkPermission(context, role) {
 async function isHouseholdOwner(householdId, token) {
   try {
     const userId = jwt.verify(token, process.env.JWT_KEY)["data"]["id"];
-    const result = await User.findOne({ _id: userId });
-    return result.householdId === householdId;
-  } catch {
+    const result = await User.findOne({ _id: userId, householdId: householdId});
+    if(result) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e){
+    console.log(e)
     return false;
   }
 }

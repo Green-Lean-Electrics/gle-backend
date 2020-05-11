@@ -17,7 +17,6 @@ module.exports = {
     },
     getBufferLoad: async function () {
         const coalPlant = await CoalPlant.findOne({})
-        console.log(coalPlant)
         return coalPlant.buffer.load
     },
     getRatio: async function () {

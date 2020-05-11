@@ -174,11 +174,6 @@ module.exports = {
 
   getAllUsers: async function () {
     let users = await User.find({ role: "PROSUMER_ROLE" });
-    users = users.map((user) => {
-      user.lastSeen = 'fff:' + user.lastSeen.toISOString().toString();
-      return user
-    });
-    console.log(users)
     return users;
   },
 
