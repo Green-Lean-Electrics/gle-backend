@@ -10,7 +10,7 @@ const MAX_COAL_BUFFER_LOAD = 200.0;
 module.exports = {
   updateBuffers: async function (iterationsPerHour) {
     // Households buffers
-    const households = await Household.find({});
+    const households = await Household.find({}).cache(40);
 
     let netPower = 0;
     let gridDemand = 0;
@@ -66,6 +66,7 @@ module.exports = {
         }
         netPower += deltaMarket;
       }
+
       await Household.updateOne(
         { _id: households[i]._id },
         { "buffer.load": newBufferLoad }

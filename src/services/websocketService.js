@@ -16,7 +16,8 @@ async function sendCoalPlantInformation(connection) {
     bufferLoad: await coalPlant.getBufferLoad(),
     ratio: await coalPlant.getRatio(),
     coalPlantState: await coalPlant.getState(),
-    blackouts: await coalPlant.getBlackouts()
+    coalPlantProduction: await coalPlant.getElectricityProduction(),
+    blackouts: await coalPlant.getBlackouts(),
   };
   connection.sendUTF(JSON.stringify(info));
 }

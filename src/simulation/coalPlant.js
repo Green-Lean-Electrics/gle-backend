@@ -1,7 +1,7 @@
 const stoch = require("stochastic");
 const { UserInputError } = require("apollo-server-express");
 
-const { CoalPlant } = require("../db/dbModels");
+const { CoalPlant, User } = require("../db/dbModels");
 const cachegoose = require("cachegoose");
 
 const COAL_PLANT_STARTUP_TIME_SECONDS = 30;
@@ -48,7 +48,23 @@ module.exports = {
 
   getBlackouts: async function () {
     const coalPlant = await CoalPlant.findOne({}).cache(30, `coal_blackouts`);
-    return coalPlant.blackouts;
+    console.log(coalPlant.blackouts);
+    const users = await User.find({ role: "PROSUMER_ROLE" }).cache(300);
+    return users
+      .filter((user) =>
+        coalPlant.blackouts.includes(user.householdId.toString())
+      )
+      .map((user) => {
+        return (({
+          name,
+          email,
+          profilePictureURL,
+          householdId,
+          lastSeen,
+        }) => ({ name, email, profilePictureURL, householdId, lastSeen }))(
+          user
+        );
+      });
   },
 
   setElectricityPrice: async function (newPrice) {
