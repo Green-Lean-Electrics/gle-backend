@@ -60,6 +60,7 @@ app.get("/pictures", (req, res) => {
   });
 });
 
-cron.schedule("* * * * *", function () {
-  buffer.updateBuffers();
+
+cron.schedule("1,15,30,45 * * * * *", function () {
+  buffer.updateBuffers(240);
 });

@@ -66,8 +66,11 @@ const coalPlantSchema = new Schema({
     load: Number,
     ratio: Number,
   },
+  gridDemand: Number,
   state: String,
   electricityPrice: Number,
+  blackouts: [String],
+
 });
 
 const Household = mongoose.model("household", householdSchema);

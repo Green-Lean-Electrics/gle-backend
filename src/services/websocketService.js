@@ -2,17 +2,21 @@ const stoch = require("stochastic");
 const weather = require("../simulation/weather");
 const consumption = require("../simulation/electricityConsumption");
 const production = require("../simulation/electricityProduction");
+const price = require("../simulation/electricityPrice");
 const buffer = require("../simulation/buffers");
 const auth = require("../graphql/authentication");
 
+const coalPlant = require("../simulation/coalPlant");
+
 async function sendCoalPlantInformation(connection) {
   const info = {
-    realPrice: 2.0,
-    estimatedPrice: stoch.norm(2, 0.25, 1),
-    totalDemand: stoch.norm(400, 5.0, 1),
-    bufferLoad: stoch.norm(150, 5.0, 1),
-    ratio: 0.5,
-    coalPlantState: "RUNNING",
+    realPrice: await coalPlant.getElectricityPrice(),
+    estimatedPrice: await price.getElectricityPrice(),
+    totalDemand: await coalPlant.getGridDemand(),
+    bufferLoad: await coalPlant.getBufferLoad(),
+    ratio: await coalPlant.getRatio(),
+    coalPlantState: await coalPlant.getState(),
+    blackouts: await coalPlant.getBlackouts()
   };
   connection.sendUTF(JSON.stringify(info));
 }

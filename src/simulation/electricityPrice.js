@@ -4,7 +4,7 @@ const wind = require('./weather')
 async function getAverageWindspeed(){
     let numberOfHouseholds = 0
     let averageWind = 0.0
-    let households = await Household.find({});
+    let households = await Household.find({}).cache(300);
     numberOfHouseholds = households.length
     for(let i = 0; i < households.length; i++){
         const speed = await wind.getWindSpeed(households[i].id)

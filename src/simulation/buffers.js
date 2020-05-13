@@ -1,4 +1,4 @@
-const { Household } = require("../db/dbModels");
+const { Household, CoalPlant } = require("../db/dbModels");
 const coalPlant = require("./coalPlant");
 const consumption = require("./electricityConsumption");
 const production = require("./electricityProduction");
@@ -8,10 +8,14 @@ const MAX_HOUSE_BUFFER_LOAD = 7.0;
 const MAX_COAL_BUFFER_LOAD = 200.0;
 
 module.exports = {
-  updateBuffers: async function () {
+  updateBuffers: async function (iterationsPerHour) {
     // Households buffers
     const households = await Household.find({});
+
     let netPower = 0;
+    let gridDemand = 0;
+    let blackoutHouseholds = [];
+
     for (let i = 0; i < households.length; i++) {
       const currentConsumption = await consumption.getElectricityConsumption(
         households[i]._id
@@ -30,35 +34,35 @@ module.exports = {
       const deltaMarket = (1 - ratio) * delta;
 
       let newBufferLoad;
-
       if (delta > 0) {
-        if (await module.exports.isSellingBlocked(households[i]._id)) {
-          if (bufferLoad + delta > MAX_HOUSE_BUFFER_LOAD) {
-            newBufferLoad = MAX_HOUSE_BUFFER_LOAD;
-          } else {
-            newBufferLoad = bufferLoad + delta;
-          }
-        } else {
+        newBufferLoad = Math.max(
+          bufferLoad + deltaBuffer / iterationsPerHour,
+          MAX_HOUSE_BUFFER_LOAD
+        );
+        if (!(await module.exports.isSellingBlocked(households[i]._id))) {
           // Sells to the market
-          if (bufferLoad + deltaBuffer > MAX_HOUSE_BUFFER_LOAD) {
+          if (
+            bufferLoad + deltaBuffer / iterationsPerHour >
+            MAX_HOUSE_BUFFER_LOAD
+          ) {
             // Buffer will be full and remaining has to be sold
-            newBufferLoad = MAX_HOUSE_BUFFER_LOAD;
             netPower += bufferLoad + deltaBuffer - MAX_HOUSE_BUFFER_LOAD;
-          } else {
-            // Standard case
-            newBufferLoad = bufferLoad + deltaBuffer;
           }
           netPower += deltaMarket;
         }
       } else {
         //Buys from the market; deltaBuffer and deltaMarket are negative
-        if (bufferLoad + deltaBuffer < 0) {
+        if (deltaMarket < 0) {
+          blackoutHouseholds.push(households[i]._id);
+        }
+        newBufferLoad = Math.max(
+          bufferLoad + deltaBuffer / iterationsPerHour,
+          0
+        );
+
+        if (bufferLoad + deltaBuffer / iterationsPerHour < 0) {
           // Buffer will be empty and missing power has to be bought
-          newBufferLoad = 0;
-          netPower -= (bufferLoad + deltaBuffer);
-        } else {
-          // Standard case
-          newBufferLoad = bufferLoad + deltaBuffer;
+          netPower += bufferLoad + deltaBuffer / iterationsPerHour;
         }
         netPower += deltaMarket;
       }
@@ -69,15 +73,58 @@ module.exports = {
       cachegoose.clearCache(`${households[i]._id}_buffer`);
     }
 
-    // // Coalplant buffers
-    // const coalPlantProduction = coalPlant.getElectricityProduction();
+    gridDemand = Math.max(0, -1 * netPower);
 
-    // const coalToBuffer = coalPlant.getRatio() * coalPlantProduction;
-    // const coalToMarket = (1 - coalPlant.getRatio()) * coalPlantProduction;
+    // Coalplant buffer
+
+    const coalPlantProduction = await coalPlant.getElectricityProduction();
+    let coalPlantBufferLoad = await coalPlant.getBufferLoad();
+    if (coalPlantProduction > 0) {
+      const coalToBuffer = (await coalPlant.getRatio()) * coalPlantProduction;
+      const coalToMarket =
+        (1 - (await coalPlant.getRatio())) * coalPlantProduction;
+
+      coalPlantBufferLoad = Math.min(
+        MAX_COAL_BUFFER_LOAD,
+        coalPlantBufferLoad + coalToBuffer / iterationsPerHour
+      );
+
+      netPower += coalToMarket;
+    } else {
+      if (netPower < 0) {
+        coalPlantBufferLoad = Math.max(
+          0,
+          coalPlantBufferLoad + netPower / iterationsPerHour
+        );
+        netPower += coalPlantBufferLoad / iterationsPerHour;
+      }
+    }
+
+    if (netPower > 0) {
+      //No blackouts happended
+      blackoutHouseholds = [];
+    }
+
+    await CoalPlant.updateOne(
+      {},
+      {
+        $set: {
+          "buffer.load": coalPlantBufferLoad,
+          gridDemand: gridDemand,
+          blackouts: blackoutHouseholds,
+        },
+      }
+    );
+    cachegoose.clearCache(`coal_buffer`);
+    cachegoose.clearCache(`coal_demand`);
+    cachegoose.clearCache(`coal_blackouts`);
   },
 
   getBufferLoad: async function (householdID) {
-    const household = await Household.findById(householdID).cache(15, `${householdID}_buffer`);
+    const household = await Household.findById(householdID).cache(
+      15,
+      `${householdID}_buffer`
+    );
     return household.buffer.load;
   },
   getRatio: async function (householdID) {
