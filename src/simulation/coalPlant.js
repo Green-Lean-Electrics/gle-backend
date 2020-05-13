@@ -55,15 +55,11 @@ module.exports = {
         coalPlant.blackouts.includes(user.householdId.toString())
       )
       .map((user) => {
-        return (({
+        return (({ name, email, profilePictureURL }) => ({
           name,
           email,
           profilePictureURL,
-          householdId,
-          lastSeen,
-        }) => ({ name, email, profilePictureURL, householdId, lastSeen }))(
-          user
-        );
+        }))(user);
       });
   },
 
