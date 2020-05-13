@@ -32,7 +32,7 @@ async function sendHouseholdInformation(connection, householdId) {
     electricityProduction: await production.getElectricityProduction(
       householdId
     ),
-    //electricityPrice: await coalPlant.getElectricityPrice(),
+    electricityPrice: await coalPlant.getElectricityPrice(),
     failure: await production.checkFailure(householdId),
     bufferLoad: await buffer.getBufferLoad(householdId),
     ratio: await buffer.getRatio(householdId),
