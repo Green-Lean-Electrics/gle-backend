@@ -17,7 +17,7 @@ if (process.env.NODE_ENV !== "production") {
 const { initConnection } = require("./db/dbUtils");
 
 const buffer = require("./simulation/buffers");
-
+const weather = require("./simulation/weather");
 
 
 initConnection()
@@ -60,6 +60,11 @@ app.get("/pictures", (req, res) => {
   });
 });
 
+
+
+cron.schedule("1,15,30,40 * * * *", function () {
+  weather.updateWindParameters();
+});
 
 cron.schedule("1,15,30,45 * * * * *", function () {
   buffer.updateBuffers(240);
