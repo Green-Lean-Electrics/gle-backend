@@ -52,7 +52,7 @@ function handleWebsocketRequests(websocketServer) {
           if (householdId === "COAL_PLANT" && (await auth.isManager(token))) {
             task = setInterval(function () {
               sendCoalPlantInformation(connection, householdId);
-            }, 100);
+            }, 1000);
           } else {
             if (
               (await auth.isHouseholdOwner(householdId, token)) ||
@@ -60,7 +60,7 @@ function handleWebsocketRequests(websocketServer) {
             ) {
               task = setInterval(function () {
                 sendHouseholdInformation(connection, householdId);
-              }, 100);
+              }, 1000);
             } else {
               console.log("Invalid WS request");
             }
