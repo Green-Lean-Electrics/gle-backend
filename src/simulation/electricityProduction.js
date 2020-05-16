@@ -16,7 +16,10 @@ module.exports = {
   },
 
   getElectricityProduction: async function (householdID) {
-    const household = await Household.findById(householdID).cache(300);
+    const household = await Household.findById(householdID).cache(
+      300,
+      `${householdID}_wind`
+    );
     if (household.windSimulation.failure) {
       return 0.0;
     } else {
@@ -27,7 +30,7 @@ module.exports = {
       if (windSpeed < 3.0) {
         return 0.0;
       } else if (windSpeed >= 3.0 && windSpeed <= 13.0) {
-        return Math.pow(windSpeed, 3)/100;
+        return Math.pow(windSpeed, 3) / 100;
       } else if (windSpeed >= 13.0 && windSpeed <= 25.0) {
         return NOMINAL_POWER;
       } else {

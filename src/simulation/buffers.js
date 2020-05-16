@@ -35,7 +35,7 @@ module.exports = {
 
       let newBufferLoad;
       if (delta > 0) {
-        newBufferLoad = Math.max(
+        newBufferLoad = Math.min(
           bufferLoad + deltaBuffer / iterationsPerHour,
           MAX_HOUSE_BUFFER_LOAD
         );
